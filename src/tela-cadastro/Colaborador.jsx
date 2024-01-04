@@ -3,6 +3,8 @@ import axios from 'axios';
 import InputMask from 'react-input-mask';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Colaborador() {
   const [colaborador, setColaborador] = useState({
@@ -11,16 +13,15 @@ function Colaborador() {
   });
 
   const [colaboradores, setColaboradores] = useState([]);
-  const [atualizar, setAtualizar] = useState([]);
+  const [atualizar, setAtualizar] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    if (atualizar) {
-      axios.get("https://sistema-cafe-da-manha-back-spring.onrender.com/collaborators")
-        .then(result => {
-          setColaboradores(result.data);
-        });
-    }
+    axios.get("https://sistema-cafe-da-manha-back-spring.onrender.com/collaborators")
+      .then(result => {
+        setColaboradores(result.data);
+      })
+      .catch(error => console.error("Erro ao carregar colaboradores:", error));
   }, [atualizar]);
 
   function handleChange(event) {
@@ -33,6 +34,11 @@ function Colaborador() {
       .then(result => {
         setAtualizar(!atualizar);
         setOpenModal(false);
+        toast.success("Colaborador adicionado com sucesso!");
+      })
+      .catch(error => {
+        console.error("Erro ao adicionar colaborador:", error);
+        toast.error("Erro ao adicionar colaborador. Verifique os dados e tente novamente.");
       });
   }
 
@@ -40,6 +46,11 @@ function Colaborador() {
     axios.delete("https://sistema-cafe-da-manha-back-spring.onrender.com/collaborators/" + cpf)
       .then(result => {
         setAtualizar(!atualizar);
+        toast.success("Colaborador removido com sucesso!");
+      })
+      .catch(error => {
+        console.error("Erro ao excluir colaborador:", error);
+        toast.error("Erro ao excluir colaborador. Tente novamente mais tarde.");
       });
   }
 
@@ -108,6 +119,8 @@ function Colaborador() {
           </div>
         </form>
       )}
+
+      <ToastContainer />
     </div>
   );
 }
